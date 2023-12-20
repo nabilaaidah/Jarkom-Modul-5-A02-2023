@@ -246,12 +246,11 @@ iptables -A INPUT  -m time --weekdays Mon,Tue,Wed,Thu,Fri --timestart 08:00 --ti
 
 Saat weekday:
 
-![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/0ca2b744-8e13-4b10-9baa-59aae5ff81e1)
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/7fa82bc9-8b50-4839-a893-1fbb5cb24ee4)
 
 Saat weekend:
 
 ![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/41116ff2-00da-4a80-b38d-4d4764ca7ad9)
-
 
 
 ## Nomor 6
@@ -269,3 +268,38 @@ iptables -A INPUT  -m time --weekdays Mon,Tue,Wed,Thu,Fri --timestart 08:00 --ti
 ### Hasil
 
 ![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/1cfe3a66-192a-4a0c-b678-1c0265fd3d6b)
+
+
+## Nomor 7
+
+Karena terdapat 2 WebServer, kalian diminta agar setiap client yang mengakses Sein dengan Port 80 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan dan request dari client yang mengakses Stark dengan port 443 akan didistribusikan secara bergantian pada Sein dan Stark secara berurutan.
+
+### Jawaban
+
+```
+iptables -A PREROUTING -t nat -p tcp --dport 443 -d 10.0.0.14 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 10.0.0.14
+iptables -A PREROUTING -t nat -p tcp --dport 443 -d 10.0.0.14 -j DNAT --to-destination 10.0.4.2
+
+iptables -A PREROUTING -t nat -p tcp --dport 80 -d 10.0.4.2 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 10.0.4.2
+iptables -A PREROUTING -t nat -p tcp --dport 80 -d 10.0.4.2 -j DNAT --to-destination 10.0.0.14
+```
+
+### Hasil
+#### Port 80
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/86befa3c-498e-4be2-a3ad-9b708a793d24)
+
+#### Port 443
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/8371ff63-4801-4447-af87-3d6ce02695c0)
+
+
+## Nomor 8
+
+Karena berbeda koalisi politik, maka subnet dengan masyarakat yang berada pada Revolte dilarang keras mengakses WebServer hingga masa pencoblosan pemilu kepala suku 2024 berakhir. Masa pemilu (hingga pemungutan dan penghitungan suara selesai) kepala suku bersamaan dengan masa pemilu Presiden dan Wakil Presiden Indonesia 2024.
+
+### Jawaban
+
+```
+iptables -A INPUT -s 10.0.0.0/30 -p tcp --dport 80 -m time --datestart 2023-12-15 --datestop 2024-06-26 -j DROP
+```

@@ -146,3 +146,39 @@ net.ipv4.ip_forward=1’ > /etc/sysctl.conf
 
 service isc-dhcp-relay start
 ```
+
+
+# Soal
+
+## Nomor 1
+
+Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Aura menggunakan iptables, tetapi tidak ingin menggunakan MASQUERADE.
+
+## Jawaban
+
+```
+IPETH0="$(ip -br a | grep eth0 | awk '{print $NF}' | cut -d'/' -f1)"
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source "$IPETH0" -s 10.0.0.0/20
+```
+
+
+## Nomor 2
+
+Kalian diminta untuk melakukan drop semua TCP dan UDP kecuali port 8080 pada TCP.
+
+## Jawaban
+
+```
+iptables -A INPUT -p tcp –dport 8080 -j ACCEPT
+iptables -A INPUT -p tcp ! --dport 8080 -j DROP
+iptables -A INPUT -p udp -j DROP
+```
+
+## Hasil
+#### Di TCP port 8080
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/c9fed51a-5773-48e1-a5df-e54499fd0652)
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/960a2cc0-3999-42d5-9297-422f86c417da)
+
+#### Di TCP selain port 8080

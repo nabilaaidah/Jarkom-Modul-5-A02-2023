@@ -154,7 +154,7 @@ service isc-dhcp-relay start
 
 Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Aura menggunakan iptables, tetapi tidak ingin menggunakan MASQUERADE.
 
-## Jawaban
+### Jawaban
 
 ```
 IPETH0="$(ip -br a | grep eth0 | awk '{print $NF}' | cut -d'/' -f1)"
@@ -166,7 +166,7 @@ iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source "$IPETH0" -s 10.0.0.0
 
 Kalian diminta untuk melakukan drop semua TCP dan UDP kecuali port 8080 pada TCP.
 
-## Jawaban
+### Jawaban
 
 ```
 iptables -A INPUT -p tcp –dport 8080 -j ACCEPT
@@ -174,7 +174,7 @@ iptables -A INPUT -p tcp ! --dport 8080 -j DROP
 iptables -A INPUT -p udp -j DROP
 ```
 
-## Hasil
+### Hasil
 #### Di TCP port 8080
 
 ![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/c9fed51a-5773-48e1-a5df-e54499fd0652)
@@ -186,3 +186,86 @@ iptables -A INPUT -p udp -j DROP
 ![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/ac0fbe40-12b5-4a4b-986a-905bad000c19)
 
 ![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/b2072734-de35-4c37-b463-43deac798a31)
+
+#### Di UDP
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/546a068a-c99b-4b37-81c0-57c8368bcae7)
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/ce5c1757-0f68-4d82-80bb-d14fb746205f)
+
+
+## Nomor 3
+
+Kepala Suku North Area meminta kalian untuk membatasi DHCP dan DNS Server hanya dapat dilakukan ping oleh maksimal 3 device secara bersamaan, selebihnya akan di drop.
+
+### Jawaban
+
+```
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+```
+
+### Hasil
+
+Revolte (DHCP Server)
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/fe97b48b-fe18-4e03-b30a-2f237cb93f57)
+
+Richter (DNS Server)
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/61099ef8-38fa-4dfd-a271-8c57cc84aaa5)
+
+
+## Nomor 4
+
+Lakukan pembatasan sehingga koneksi SSH pada Web Server hanya dapat dilakukan oleh masyarakat yang berada pada GrobeForest.
+
+### Jawaban
+
+```
+iptables -A INPUT -p tcp --dport 22 -s 10.0.4.0/22 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j DROP
+```
+
+### Hasil
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/17a99d0f-1c09-4d35-be93-1a14c762d328)
+
+
+## Nomor 5
+
+Selain itu, akses menuju WebServer hanya diperbolehkan saat jam kerja yaitu Senin-Jumat pada pukul 08.00-16.00
+
+### Jawaban
+
+```
+iptables -A INPUT  -m time --weekdays Mon,Tue,Wed,Thu,Fri --timestart 08:00 --timestop 16:00 -p tcp --dport 22 -s 10.0.4.0/22 -j ACCEPT
+```
+
+### Hasil
+
+Saat weekday:
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/0ca2b744-8e13-4b10-9baa-59aae5ff81e1)
+
+Saat weekend:
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/41116ff2-00da-4a80-b38d-4d4764ca7ad9)
+
+
+
+## Nomor 6
+
+Lalu, karena ternyata terdapat beberapa waktu di mana network administrator dari WebServer tidak bisa stand by, sehingga perlu ditambahkan rule bahwa akses pada hari Senin - Kamis pada jam 12.00 - 13.00 dilarang (istirahat maksi cuy) dan akses di hari Jumat pada jam 11.00 - 13.00 juga dilarang (maklum, Jumatan rek)
+
+### Jawaban
+
+```
+iptables -A INPUT  -m time --weekdays Mon,Tue,Wed,Thu --timestart 12:00 --timestop 13:00 -p tcp --dport 22 -s 10.0.4.0/22 -j DROP
+iptables -A INPUT  -m time --weekdays Fri --timestart 11:00 --timestop 13:00 -p tcp --dport 22 -s 10.0.4.0/22 -j DROP
+iptables -A INPUT  -m time --weekdays Mon,Tue,Wed,Thu,Fri --timestart 08:00 --timestop 16:00 -p tcp --dport 22 -s 10.0.4.0/22 -j ACCEPT
+```
+
+### Hasil
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/1cfe3a66-192a-4a0c-b678-1c0265fd3d6b)

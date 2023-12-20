@@ -341,3 +341,25 @@ iptables -A FORWARD -m recent --name PORT_SCAN --set -j ACCEPT
 
 ## Nomor 10
 
+Karena kepala suku ingin tau paket apa saja yang di-drop, maka di setiap node server dan router ditambahkan logging paket yang di-drop dengan standard syslog level. 
+
+### Jawaban
+
+```
+iptables -N LOGGING
+iptables -A INPUT -j LOGGING
+iptables -A OUTPUT -j LOGGING
+iptables -A LOGGING -m limit --limit 2/min -j LOG --log-prefix "IPTables-Dropped: " --log-level 4
+iptables -A INPUT -j LOG --log-prefix "Dropped packet: " --log-level 4
+
+echo 'kern.warning	/var/log/iptables.log ' >> /etc/rsyslog.conf
+/etc/init.d/rsyslog restart
+```
+
+### Hasil
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/591542b3-621e-4ac6-9d8d-acf02f722e14)
+
+
+## Kendala
+- Tolong kurangi soalnya

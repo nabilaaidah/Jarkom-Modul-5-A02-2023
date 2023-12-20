@@ -182,3 +182,7 @@ iptables -A INPUT -p udp -j DROP
 ![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/960a2cc0-3999-42d5-9297-422f86c417da)
 
 #### Di TCP selain port 8080
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/ac0fbe40-12b5-4a4b-986a-905bad000c19)
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/b2072734-de35-4c37-b463-43deac798a31)

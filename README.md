@@ -303,3 +303,41 @@ Karena berbeda koalisi politik, maka subnet dengan masyarakat yang berada pada R
 ```
 iptables -A INPUT -s 10.0.0.0/30 -p tcp --dport 80 -m time --datestart 2023-12-15 --datestop 2024-06-26 -j DROP
 ```
+
+### Hasil
+
+Di revolte:
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/03826286-9971-4931-8739-ba77b1534ed5)
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/86fa3cbf-f20c-4240-8123-063acf0bf716)
+
+Di luar revolte:
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/65d7a008-4847-4a56-b9b8-961aa2a8686b)
+
+
+## Nomor 9
+
+Sadar akan adanya potensial saling serang antar kubu politik, maka WebServer harus dapat secara otomatis memblokir  alamat IP yang melakukan scanning port dalam jumlah banyak (maksimal 20 scan port) di dalam selang waktu 10 menit. 
+(clue: test dengan nmap)
+
+### Jawaban
+
+```
+iptables -N PORT_SCAN
+
+iptables -A INPUT -m recent --name PORT_SCAN --update --seconds 600 --hitcount 20 -j DROP
+iptables -A FORWARD -m recent --name PORT_SCAN --update --seconds 600 --hitcount 20 -j DROP
+
+iptables -A INPUT -m recent --name PORT_SCAN --set -j ACCEPT
+iptables -A FORWARD -m recent --name PORT_SCAN --set -j ACCEPT
+```
+
+### Hasil
+
+![image](https://github.com/nabilaaidah/Jarkom-Modul-5-A02-2023/assets/110476969/241a065f-afae-4bbe-b945-61ade72e01d4)
+
+
+## Nomor 10
+
